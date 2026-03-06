@@ -1,41 +1,43 @@
 import axios from "axios";
 
-/* =======================================================
+/* ======================================================
    Base API Configuration
-======================================================= */
+====================================================== */
 
 const BASE_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-/* =======================================================
-   Global Error Handler
-======================================================= */
+/* ======================================================
+   Global Response / Error Handler
+====================================================== */
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const errMsg =
+
+    const message =
       error?.response?.data?.message ||
+      error?.response?.data?.error ||
       error?.response?.data ||
       error.message;
 
-    console.error("API ERROR:", errMsg);
+    console.error("API ERROR:", message);
 
     return Promise.reject(error);
   }
 );
 
-/* =======================================================
+/* ======================================================
    Creator APIs
-======================================================= */
+====================================================== */
 
 export const getCreatorByUsername = (username) =>
   api.get(`/api/creator/username/${username}`);
@@ -56,9 +58,9 @@ export const registerCreator = (data) =>
   api.post("/api/creator/register", data);
 
 
-/* =======================================================
+/* ======================================================
    Analytics APIs
-======================================================= */
+====================================================== */
 
 export const getDashboard = (creatorId) =>
   api.get(`/api/analytics/dashboard/${creatorId}`);
@@ -70,20 +72,22 @@ export const getDealsSummary = (creatorId) =>
   api.get(`/api/analytics/deals/summary/${creatorId}`);
 
 
-/* =======================================================
+/* ======================================================
    AI / ML APIs
-======================================================= */
+====================================================== */
 
+/* Price Prediction (uses username) */
 export const predictPrice = (data) =>
   api.post("/api/ai/price/predict", data);
 
+/* Brand Risk Prediction (uses username) */
 export const predictRisk = (data) =>
   api.post("/api/ai/risk/predict", data);
 
 
-/* =======================================================
+/* ======================================================
    Collaboration APIs
-======================================================= */
+====================================================== */
 
 export const getCollaborations = (creatorId, status = null) =>
   api.get(`/api/collaboration/list/${creatorId}`, {
@@ -103,8 +107,8 @@ export const deleteCollaboration = (collabId) =>
   api.delete(`/api/collaboration/${collabId}`);
 
 
-/* =======================================================
+/* ======================================================
    Export Axios Instance
-======================================================= */
+====================================================== */
 
 export default api;

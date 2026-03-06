@@ -14,12 +14,14 @@ def create_app():
     from app.routes.creator_routes       import creator_bp
     from app.routes.collaboration_routes import collaboration_bp
     from app.routes.pricing_routes       import pricing_bp
+    from app.routes.risk_routes          import risk_bp
     from app.routes.analytics_routes     import analytics_bp
     from app.routes.instagram_routes     import instagram_bp
 
     app.register_blueprint(creator_bp,       url_prefix="/api/creator")
     app.register_blueprint(collaboration_bp, url_prefix="/api/collaboration")
-    app.register_blueprint(pricing_bp,       url_prefix="/api/ai")
+    app.register_blueprint(pricing_bp)                              # uses blueprint's own /api/ai/price prefix
+    app.register_blueprint(risk_bp)                                 # uses blueprint's own /api/ai/risk prefix
     app.register_blueprint(analytics_bp,     url_prefix="/api/analytics")
     app.register_blueprint(instagram_bp,     url_prefix="/api/instagram")
 

@@ -1,23 +1,24 @@
 import axios from "axios";
 
-/* ======================================================
-   Base API Configuration
-====================================================== */
+/* ─────────────────────────────────────────────
+   Base Config
+───────────────────────────────────────────── */
 
 const BASE_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json"
   }
 });
 
-/* ======================================================
+
+/* ─────────────────────────────────────────────
    Attach JWT Token Automatically
-====================================================== */
+───────────────────────────────────────────── */
 
 api.interceptors.request.use((config) => {
 
@@ -30,6 +31,31 @@ api.interceptors.request.use((config) => {
   return config;
 
 });
+
+
+/* ─────────────────────────────────────────────
+   Global API Error Logger
+───────────────────────────────────────────── */
+
+api.interceptors.response.use(
+
+  (res) => res,
+
+  (err) => {
+
+    console.error(
+      "API ERROR:",
+      err?.response?.data?.message ||
+      err?.response?.data ||
+      err.message
+    );
+
+    return Promise.reject(err);
+
+  }
+
+);
+
 
 /* ======================================================
    Brand Authentication APIs
@@ -49,6 +75,9 @@ export const registerBrand = (data) =>
 export const getAllCreators = () =>
   api.get("/api/creator/all");
 
+export const registerCreator = (data) =>
+  api.post("/api/creator/register", data);
+
 export const getCreatorByUsername = (username) =>
   api.get(`/api/creator/username/${username}`);
 
@@ -66,14 +95,14 @@ export const getCreatorScore = (id) =>
    Analytics APIs
 ====================================================== */
 
-export const getDashboard = (creatorId) =>
-  api.get(`/api/analytics/dashboard/${creatorId}`);
+export const getDashboard = (id) =>
+  api.get(`/api/analytics/dashboard/${id}`);
 
-export const getEngagement = (creatorId) =>
-  api.get(`/api/analytics/engagement/${creatorId}`);
+export const getEngagement = (id) =>
+  api.get(`/api/analytics/engagement/${id}`);
 
-export const getDealsSummary = (creatorId) =>
-  api.get(`/api/analytics/deals/summary/${creatorId}`);
+export const getDealsSummary = (id) =>
+  api.get(`/api/analytics/deals/summary/${id}`);
 
 
 /* ======================================================
@@ -85,6 +114,36 @@ export const predictPrice = (data) =>
 
 export const predictRisk = (data) =>
   api.post("/api/ai/risk/predict", data);
+
+export const predictRiskFromFeatures = (data) =>
+  api.post("/api/ai/risk/predict/features", data);
+
+export const predictCreatorScore = (data) =>
+  api.post("/api/ai/score/predict", data);
+
+export const predictCreatorScoreFromFeatures = (data) =>
+  api.post("/api/ai/score/predict/features", data);
+
+
+/* ======================================================
+   Combined ML Helper
+====================================================== */
+
+export const predictAll = async (username) => {
+
+  const [priceRes, riskRes, scoreRes] = await Promise.all([
+    predictPrice({ username }),
+    predictRisk({ username }),
+    predictCreatorScore({ username })
+  ]);
+
+  return {
+    price: priceRes.data.data,
+    risk: riskRes.data.data,
+    score: scoreRes.data.data
+  };
+
+};
 
 
 /* ======================================================
@@ -108,7 +167,7 @@ export const deleteCollaboration = (id) =>
 
 
 /* ======================================================
-   Export Axios Instance
+   Export Axios instance
 ====================================================== */
 
 export default api;

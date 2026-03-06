@@ -1,44 +1,30 @@
 import axios from "axios";
 
-/* ======================================================
-   Base API Configuration
-====================================================== */
-
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+/* ─────────────────────────────────────────────────────────────
+   Base config
+───────────────────────────────────────────────────────────── */
+const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
 
 const api = axios.create({
   baseURL: BASE_URL,
   timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
-/* ======================================================
-   Global Response / Error Handler
-====================================================== */
-
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.response?.data ||
-      error.message;
-
-    console.error("API ERROR:", message);
-
-    return Promise.reject(error);
+  (res) => res,
+  (err) => {
+    console.error(
+      "API ERROR:",
+      err?.response?.data?.message || err?.response?.data || err.message
+    );
+    return Promise.reject(err);
   }
 );
 
-/* ======================================================
+/* ─────────────────────────────────────────────────────────────
    Creator APIs
-====================================================== */
-
+───────────────────────────────────────────────────────────── */
 export const getCreatorByUsername = (username) =>
   api.get(`/api/creator/username/${username}`);
 
@@ -51,44 +37,66 @@ export const getCreatorAnalytics = (id) =>
 export const getCreatorScore = (id) =>
   api.get(`/api/creator/score/${id}`);
 
-export const getAllCreators = () =>
-  api.get("/api/creator/all");
+export const getAllCreators = () => api.get("/api/creator/all");
 
 export const registerCreator = (data) =>
   api.post("/api/creator/register", data);
 
-
-/* ======================================================
+/* ─────────────────────────────────────────────────────────────
    Analytics APIs
-====================================================== */
+───────────────────────────────────────────────────────────── */
+export const getDashboard   = (id) => api.get(`/api/analytics/dashboard/${id}`);
+export const getEngagement  = (id) => api.get(`/api/analytics/engagement/${id}`);
+export const getDealsSummary = (id) => api.get(`/api/analytics/deals/summary/${id}`);
 
-export const getDashboard = (creatorId) =>
-  api.get(`/api/analytics/dashboard/${creatorId}`);
-
-export const getEngagement = (creatorId) =>
-  api.get(`/api/analytics/engagement/${creatorId}`);
-
-export const getDealsSummary = (creatorId) =>
-  api.get(`/api/analytics/deals/summary/${creatorId}`);
-
-
-/* ======================================================
-   AI / ML APIs
-====================================================== */
-
-/* Price Prediction (uses username) */
+/* ─────────────────────────────────────────────────────────────
+   ML — Price Prediction
+   POST /api/ai/price/predict   { username }
+───────────────────────────────────────────────────────────── */
 export const predictPrice = (data) =>
   api.post("/api/ai/price/predict", data);
 
-/* Brand Risk Prediction (uses username) */
+/* ─────────────────────────────────────────────────────────────
+   ML — Risk Prediction
+   POST /api/ai/risk/predict            { username }
+   POST /api/ai/risk/predict/features   { followers, … }
+───────────────────────────────────────────────────────────── */
 export const predictRisk = (data) =>
   api.post("/api/ai/risk/predict", data);
 
+export const predictRiskFromFeatures = (data) =>
+  api.post("/api/ai/risk/predict/features", data);
 
-/* ======================================================
+/* ─────────────────────────────────────────────────────────────
+   ML — Creator Score
+   POST /api/ai/score/predict           { username }
+   POST /api/ai/score/predict/features  { followers, … }
+───────────────────────────────────────────────────────────── */
+export const predictCreatorScore = (data) =>
+  api.post("/api/ai/score/predict", data);
+
+export const predictCreatorScoreFromFeatures = (data) =>
+  api.post("/api/ai/score/predict/features", data);
+
+/* ─────────────────────────────────────────────────────────────
+   Combined helper – fires all three models in parallel for a username
+───────────────────────────────────────────────────────────── */
+export const predictAll = async (username) => {
+  const [priceRes, riskRes, scoreRes] = await Promise.all([
+    predictPrice({ username }),
+    predictRisk({ username }),
+    predictCreatorScore({ username }),
+  ]);
+  return {
+    price: priceRes.data.data,
+    risk:  riskRes.data.data,
+    score: scoreRes.data.data,
+  };
+};
+
+/* ─────────────────────────────────────────────────────────────
    Collaboration APIs
-====================================================== */
-
+───────────────────────────────────────────────────────────── */
 export const getCollaborations = (creatorId, status = null) =>
   api.get(`/api/collaboration/list/${creatorId}`, {
     params: status ? { status } : {},
@@ -105,10 +113,5 @@ export const updateCollaboration = (collabId, data) =>
 
 export const deleteCollaboration = (collabId) =>
   api.delete(`/api/collaboration/${collabId}`);
-
-
-/* ======================================================
-   Export Axios Instance
-====================================================== */
 
 export default api;

@@ -1,0 +1,106 @@
+{
+  "trained_at": "2026-03-05T10:09:39.930036",
+  "training_samples": 1500,
+  "usd_to_inr": 83.5,
+  "price_model": {
+    "algorithm": "XGBoost Regressor",
+    "target": "price_inr per sponsored post",
+    "features": [
+      "followers_log",
+      "follower_following_ratio",
+      "engagement_rate_avg",
+      "engagement_cv",
+      "avg_likes",
+      "avg_comments",
+      "avg_views",
+      "posting_frequency_weekly",
+      "video_ratio",
+      "image_ratio",
+      "avg_hashtag_count",
+      "avg_caption_length",
+      "avg_mention_count",
+      "collab_post_ratio",
+      "affiliate_link_ratio",
+      "brand_mentions_per_post",
+      "avg_brand_keyword_score",
+      "authority_score",
+      "content_quality_score",
+      "engagement_consistency_score",
+      "topic_fitness",
+      "topic_travel",
+      "topic_food",
+      "topic_fashion",
+      "topic_tech",
+      "topic_comedy",
+      "topic_sports",
+      "topic_lifestyle"
+    ],
+    "metrics": {
+      "MAE_INR": 655920.8995319272,
+      "RMSE_INR": 3579311.840087331,
+      "R2": 0.9845934319200255,
+      "MAPE_%": 7.924875596379379
+    },
+    "cv_r2": 0.9989620969230051,
+    "top_features": {
+      "avg_views": 0.501290500164032,
+      "followers_log": 0.33147570490837097,
+      "avg_likes": 0.12847357988357544,
+      "avg_comments": 0.03534334897994995,
+      "engagement_rate_avg": 0.0022836977150291204,
+      "authority_score": 0.00023378667538054287,
+      "topic_fitness": 0.00013916651369072497,
+      "topic_comedy": 7.341460150200874e-05,
+      "topic_lifestyle": 6.334120553219691e-05,
+      "image_ratio": 4.8410794988740236e-05
+    }
+  },
+  "risk_model": {
+    "algorithm": "RandomForest Classifier",
+    "classes": [
+      "LOW",
+      "MEDIUM",
+      "HIGH"
+    ],
+    "features": [
+      "followers_log",
+      "engagement_rate_avg",
+      "controversial_keyword_score",
+      "political_content_ratio",
+      "sensitive_topic_ratio",
+      "toxicity_score",
+      "collab_post_ratio",
+      "avg_hashtag_count",
+      "topic_fitness",
+      "topic_travel",
+      "topic_food",
+      "topic_fashion",
+      "topic_tech",
+      "topic_comedy",
+      "topic_sports",
+      "topic_lifestyle"
+    ],
+    "metrics": {
+      "accuracy": 0.7033333333333334
+    }
+  },
+  "scorer_model": {
+    "algorithm": "XGBoost Regressor",
+    "target": "creator_score 0\u2013100",
+    "features": [
+      "followers_log",
+      "engagement_rate_avg",
+      "engagement_cv",
+      "posting_frequency_weekly",
+      "posting_consistency_score",
+      "video_ratio",
+      "collab_post_ratio",
+      "authority_score",
+      "content_quality_score"
+    ],
+    "metrics": {
+      "MAE": 4.914839643859863,
+      "R2": 0.22871019168997908
+    }
+  }
+}

@@ -1,11 +1,14 @@
 from flask import Blueprint, request
 from bson import ObjectId
+
 from app.config import Config
 from app.utils.db import get_collection
 from app.utils.helpers import success_response, error_response
 from app.utils.validators import is_valid_object_id, validate_required_fields
 
 pricing_bp = Blueprint("pricing", __name__)
+
+
 # ─── POST /api/ai/price/predict ──────────────────────────────────────────────
 @pricing_bp.route("/price/predict", methods=["POST"])
 def predict_price():

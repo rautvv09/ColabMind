@@ -8,8 +8,8 @@ const { id } = useParams();
 const navigate = useNavigate();
 
 const [form,setForm] = useState({
-status:"",
-payment_status:""
+deal_type:"",
+agreed_price:""
 });
 
 const handleSubmit = async(e)=>{
@@ -18,7 +18,12 @@ e.preventDefault();
 
 try{
 
-await updateCollaboration(id,form);
+const payload = {
+deal_type:form.deal_type,
+agreed_price:Number(form.agreed_price)
+};
+
+await updateCollaboration(id,payload);
 
 alert("Updated successfully");
 
@@ -46,18 +51,16 @@ Update Collaboration
 
 <div className="collab-field">
 
-<label>Status</label>
+<label>Deal Type</label>
 
 <select
 className="cm-input"
-onChange={(e)=>setForm({...form,status:e.target.value})}
+onChange={(e)=>setForm({...form,deal_type:e.target.value})}
 >
 
 <option value="">Select</option>
-<option value="pending">Pending</option>
-<option value="active">Active</option>
-<option value="completed">Completed</option>
-<option value="cancelled">Cancelled</option>
+<option value="reel">Reel</option>
+<option value="story">Story</option>
 
 </select>
 
@@ -65,18 +68,14 @@ onChange={(e)=>setForm({...form,status:e.target.value})}
 
 <div className="collab-field">
 
-<label>Payment Status</label>
+<label>Price Change / Update</label>
 
-<select
+<input
 className="cm-input"
-onChange={(e)=>setForm({...form,payment_status:e.target.value})}
->
-
-<option value="">Select</option>
-<option value="paid">Paid</option>
-<option value="unpaid">Unpaid</option>
-
-</select>
+type="number"
+placeholder="Enter price"
+onChange={(e)=>setForm({...form,agreed_price:e.target.value})}
+/>
 
 </div>
 

@@ -4,6 +4,7 @@ import { getCollaborations, deleteCollaboration } from "../services/api";
 import "./CollaborationHistory.css";
 
 export default function CollaborationHistory() {
+
   const navigate = useNavigate();
   const [collabs, setCollabs] = useState([]);
 
@@ -13,30 +14,48 @@ export default function CollaborationHistory() {
 
   const loadCollaborations = async () => {
     try {
+
       const res = await getCollaborations();
+
       // Adjust res.data.data based on your actual API response structure
       setCollabs(res.data.data || []);
+
     } catch (err) {
+
       console.error("Error fetching collaborations:", err);
+
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this collaboration?")) return;
+
+    if (!window.confirm("Are you sure you want to delete this collaboration?"))
+      return;
 
     try {
+
       await deleteCollaboration(id);
+
       setCollabs((prev) => prev.filter((c) => c._id !== id));
+
     } catch (err) {
+
       console.error("Error deleting collaboration:", err);
+
     }
+
   };
 
   return (
+
     <div className="collab-container">
-      <h1 className="page-title">Collaboration List</h1>
+
+      <h1 className="page-title">
+        Collaboration List
+      </h1>
 
       {/* HEADER SECTION */}
+
       <div className="collab-header">
         <span>Deal</span>
         <span>Price</span>
@@ -46,18 +65,27 @@ export default function CollaborationHistory() {
       </div>
 
       {/* LIST SECTION */}
+
       {collabs.length > 0 ? (
+
         collabs.map((c) => (
+
           <div key={c._id} className="collab-row">
+
             {/* Deal Type */}
-            <span className="deal-name">{c.deal_type}</span>
+
+            <span className="deal-name">
+              {c.deal_type}
+            </span>
 
             {/* Price */}
+
             <span className="price-amount">
               ₹{c.agreed_price ? c.agreed_price.toLocaleString() : "0"}
             </span>
 
-            {/* Status Column (Fix for the 'pending' length issue) */}
+            {/* Status Column */}
+
             <span className="status-column">
               <span className={`status ${c.status?.toLowerCase()}`}>
                 {c.status}
@@ -65,35 +93,48 @@ export default function CollaborationHistory() {
             </span>
 
             {/* Deadline */}
+
             <span className="deadline-date">
-              {c.deadline 
-                ? new Date(c.deadline).toLocaleDateString() 
+              {c.deadline
+                ? new Date(c.deadline).toLocaleDateString()
                 : "-"
               }
             </span>
 
             {/* Action Buttons */}
+
             <div className="actions">
+
               <button
                 className="btn-update"
                 onClick={() => navigate(`/update-collaboration/${c._id}`)}
               >
                 Update
               </button>
+
               <button
                 className="btn-delete"
                 onClick={() => handleDelete(c._id)}
               >
                 Delete
               </button>
+
             </div>
+
           </div>
+
         ))
+
       ) : (
+
         <p style={{ color: "#8a94a7", textAlign: "center", marginTop: "20px" }}>
           No collaborations found.
         </p>
+
       )}
+
     </div>
+
   );
+
 }

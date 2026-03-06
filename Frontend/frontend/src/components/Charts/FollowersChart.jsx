@@ -1,105 +1,98 @@
+/**
+ * FollowersChart  — repurposed as TopicRadar
+ * Radar chart showing AI-detected content topic distribution.
+ * Matches screenshot 1: 8-axis radar with purple fill.
+ * Kept as FollowersChart.jsx so existing imports don't break.
+ *
+ * Props:
+ *   topicScores – { fitness:0.4, travel:0.1, food:0, … }  (values 0-1)
+ *   height      – container px (default 280)
+ *
+ * Note: also exported as TopicRadar alias for new imports.
+ */
 import React from "react";
 import {
-  Chart as ChartJS, CategoryScale, LinearScale,
-  PointElement, LineElement, Title, Tooltip, Filler, Legend
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Radar } from "react-chartjs-2";
 
-ChartJS.register(
-  CategoryScale, LinearScale, PointElement,
-  LineElement, Title, Tooltip, Filler, Legend
-);
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: "#161d2e",
-      titleColor: "#eef0f8",
-      bodyColor: "#7a82a0",
-      borderColor: "#1e2740",
-      borderWidth: 1,
-      callbacks: {
-        label: ctx => {
-          const v = ctx.raw;
-          return ` ${v >= 1e6 ? (v/1e6).toFixed(2)+"M" : v >= 1e3 ? (v/1e3).toFixed(1)+"K" : v} followers`;
+const AXES   = ["fitness", "travel", "food", "fashion", "tech", "comedy", "sports", "lifestyle"];
+const LABELS = ["Fitness", "Travel", "Food", "Fashion", "Tech", "Comedy", "Sports", "Lifestyle"];
+
+function TopicRadar({ topicScores = {}, height = 280 }) {
+  const scores = AXES.map(k => Number((topicScores[k] || 0).toFixed(3)));
+  const allZero = scores.every(s => s === 0);
+
+  if (allZero) {
+    return (
+      <div style={{ height, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>
+          No topic data available.
+        </p>
+      </div>
+    );
+  }
+
+  const chartData = {
+    labels: LABELS,
+    datasets: [{
+      label: "Topic Score",
+      data: scores,
+      borderColor: "#6c63ff",
+      backgroundColor: "rgba(108,99,255,0.20)",
+      borderWidth: 2,
+      pointBackgroundColor: "#6c63ff",
+      pointBorderColor: "#6c63ff",
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: "#fff",
+    }],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: "#161d2e",
+        titleColor: "#eef0f8",
+        bodyColor: "#7a82a0",
+        borderColor: "#1e2740",
+        borderWidth: 1,
+        callbacks: {
+          label: ctx => ` Score: ${(ctx.raw * 100).toFixed(0)}%`,
         },
       },
     },
-  },
-  scales: {
-    x: {
-      ticks: { color: "#7a82a0", font: { family: "'DM Sans', sans-serif" } },
-      grid:  { color: "#1e2740" },
-    },
-    y: {
-      ticks: {
-        color: "#7a82a0",
-        font: { family: "'DM Sans', sans-serif" },
-        callback: v => v >= 1e6 ? `${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `${(v/1e3).toFixed(0)}K` : v,
+    scales: {
+      r: {
+        min: 0,
+        max: 1,
+        ticks: { display: false, stepSize: 0.25 },
+        grid: { color: "#1e2740", lineWidth: 1 },
+        angleLines: { color: "#1e2740" },
+        pointLabels: {
+          color: "#8892a4",
+          font: { family: "'DM Sans',sans-serif", size: 11 },
+        },
       },
-      grid: { color: "#1e2740" },
     },
-  },
-};
-
-/**
- * FollowersChart
- * Since we only have current follower_count (no historical data from Atlas),
- * this component builds a realistic-looking projected growth curve
- * based on posting frequency and engagement rate.
- *
- * Props:
- *   creator  – creator object
- *   height   – container height (default 260)
- */
-export default function FollowersChart({ creator, height = 260 }) {
-  if (!creator) return null;
-  const c = creator.profile ? { ...creator, ...creator.profile } : creator;
-
-  const current      = c.follower_count      ?? 0;
-  const engRate      = c.engagement_rate     ?? 0.01;
-  const postFreq     = c.posting_frequency_weekly ?? 3;
-
-  // Simulate 6-month growth curve based on engagement + frequency
-  const growthFactor = 1 + (engRate * 0.5 * (postFreq / 7));
-  const months       = ["6M Ago", "5M Ago", "4M Ago", "3M Ago", "2M Ago", "1M Ago", "Now"];
-  const points       = months.map((_, i) => {
-    const monthsBack = months.length - 1 - i;
-    return Math.round(current / Math.pow(growthFactor, monthsBack));
-  });
-
-  const data = {
-    labels: months,
-    datasets: [
-      {
-        label: "Followers",
-        data: points,
-        borderColor: "#6c63ff",
-        backgroundColor: "rgba(108,99,255,0.12)",
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#6c63ff",
-        pointRadius: 4,
-        pointHoverRadius: 6,
-      },
-    ],
   };
 
   return (
-    <div>
-      <div style={{ height }}>
-        <Line data={data} options={options} />
-      </div>
-      <div style={{
-        marginTop: 8, fontSize: "0.72rem", color: "var(--text-muted)",
-        textAlign: "center", fontStyle: "italic"
-      }}>
-        * Estimated growth curve based on current engagement rate & posting frequency
-      </div>
+    <div style={{ height }}>
+      <Radar data={chartData} options={options} />
     </div>
   );
 }
+
+export default TopicRadar;

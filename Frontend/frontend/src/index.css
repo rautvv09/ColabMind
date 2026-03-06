@@ -1,68 +1,433 @@
+/* ============================================================
+CollabMind — Clean Optimized Global Styles
+Dark SaaS Dashboard · Glassmorphism · React + Vite
+============================================================ */
+
+/* ---------------- GOOGLE FONTS ---------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ---------------- DESIGN TOKENS ---------------- */
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Background */
+--bg-base: #080c14;
+--bg-surface: #0d1220;
+--bg-card: #111827;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Brand */
+--accent: #6c63ff;
+--accent-2: #00d4aa;
+--gradient: linear-gradient(135deg,#6c63ff 0%,#00d4aa 100%);
+
+/* Text */
+--text-primary: #f0f4ff;
+--text-secondary: #8892a4;
+--text-muted: #4e5a6e;
+
+/* Border */
+--border: rgba(255,255,255,0.08);
+
+/* Shadows */
+--shadow-md: 0 8px 30px rgba(0,0,0,0.45);
+
+/* Radius */
+--radius-md: 12px;
+--radius-lg: 16px;
+
+/* Sidebar */
+--sidebar-width: 240px;
+
+/* Fonts */
+--font-display: 'Syne', sans-serif;
+--font-body: 'Plus Jakarta Sans', sans-serif;
+
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* ---------------- RESET ---------------- */
+
+*,
+*::before,
+*::after {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
 }
-a:hover {
-  color: #535bf2;
+
+html {
+scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+background: var(--bg-base);
+color: var(--text-primary);
+font-family: var(--font-body);
+font-size: 14px;
+line-height: 1.6;
+min-height: 100vh;
+-webkit-font-smoothing: antialiased;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* ---------------- TYPOGRAPHY ---------------- */
+
+h1,h2,h3,h4,h5,h6 {
+font-family: var(--font-display);
+font-weight: 700;
+letter-spacing: -0.02em;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+a {
+text-decoration: none;
+color: inherit;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* ---------------- SCROLLBAR ---------------- */
+
+::-webkit-scrollbar {
+width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+background: rgba(255,255,255,0.15);
+border-radius: 4px;
+}
+
+/* ---------------- LAYOUT ---------------- */
+
+.app-layout {
+display: flex;
+min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+width: var(--sidebar-width);
+background: var(--bg-surface);
+border-right: 1px solid var(--border);
+
+position: fixed;
+top:0;
+left:0;
+bottom:0;
+
+padding: 22px 14px;
+
+display:flex;
+flex-direction:column;
+z-index:100;
+}
+
+/* MAIN CONTENT */
+
+.main-content {
+margin-left: var(--sidebar-width);
+width: calc(100% - var(--sidebar-width));
+padding: 32px;
+min-height:100vh;
+}
+
+/* ---------------- NAVIGATION ---------------- */
+
+.nav-link {
+
+display:flex;
+align-items:center;
+gap:10px;
+
+padding:10px 12px;
+
+border-radius:10px;
+
+font-size:0.9rem;
+font-weight:500;
+
+color:var(--text-secondary);
+
+transition:0.2s ease;
+
+}
+
+.nav-link:hover {
+
+background:rgba(255,255,255,0.05);
+color:var(--text-primary);
+
+}
+
+.nav-link.active {
+
+background:rgba(108,99,255,0.2);
+color:#fff;
+font-weight:600;
+
+}
+
+/* ---------------- CARDS ---------------- */
+
+.cm-card {
+
+background: rgba(17,24,39,0.85);
+
+border:1px solid var(--border);
+
+border-radius:var(--radius-lg);
+
+padding:24px;
+
+box-shadow:var(--shadow-md);
+
+backdrop-filter: blur(10px);
+
+transition:0.25s;
+
+}
+
+.cm-card:hover {
+
+border-color:rgba(108,99,255,0.3);
+transform:translateY(-2px);
+
+}
+
+/* ---------------- STAT CARDS ---------------- */
+
+.stat-card {
+
+background:var(--bg-card);
+
+border:1px solid var(--border);
+
+border-radius:var(--radius-md);
+
+padding:20px;
+
+text-align:center;
+
+}
+
+.stat-value {
+
+font-family:var(--font-display);
+font-size:1.9rem;
+font-weight:800;
+
+background:var(--gradient);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+}
+
+.stat-label {
+
+font-size:.75rem;
+color:var(--text-secondary);
+
+text-transform:uppercase;
+letter-spacing:1px;
+
+}
+
+/* ---------------- BUTTONS ---------------- */
+
+.btn-cm {
+
+display:inline-flex;
+align-items:center;
+
+background:var(--gradient);
+
+border:none;
+
+border-radius:10px;
+
+padding:10px 22px;
+
+font-weight:600;
+color:#fff;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+.btn-cm:hover {
+
+transform:translateY(-2px);
+
+}
+
+/* OUTLINE BUTTON */
+
+.btn-outline-cm {
+
+border:1px solid var(--accent);
+
+background:transparent;
+
+padding:9px 20px;
+
+border-radius:10px;
+
+color:var(--accent);
+
+font-weight:600;
+
+cursor:pointer;
+
+}
+
+.btn-outline-cm:hover {
+
+background:var(--accent);
+color:white;
+
+}
+
+/* ---------------- INPUTS ---------------- */
+
+.cm-input {
+
+width:100%;
+
+padding:12px 14px;
+
+border-radius:10px;
+
+border:1px solid var(--border);
+
+background:var(--bg-card);
+
+color:var(--text-primary);
+
+font-family:var(--font-body);
+
+}
+
+.cm-input:focus {
+
+outline:none;
+border-color:var(--accent);
+
+}
+
+/* ---------------- TABLE ---------------- */
+
+.cm-table {
+
+width:100%;
+border-collapse:collapse;
+
+}
+
+.cm-table th {
+
+text-align:left;
+
+padding:12px 14px;
+
+font-size:0.75rem;
+
+color:var(--text-muted);
+
+text-transform:uppercase;
+
+border-bottom:1px solid var(--border);
+
+}
+
+.cm-table td {
+
+padding:14px;
+
+border-bottom:1px solid var(--border);
+
+}
+
+.cm-table tr:hover td {
+
+background:rgba(108,99,255,0.05);
+
+}
+
+/* ---------------- BADGES ---------------- */
+
+.cm-badge {
+
+padding:4px 10px;
+
+border-radius:20px;
+
+font-size:0.75rem;
+
+font-weight:600;
+
+}
+
+.badge-low {
+
+background:rgba(0,212,170,0.15);
+color:#00d4aa;
+
+}
+
+.badge-medium {
+
+background:rgba(255,193,7,0.15);
+color:#ffc107;
+
+}
+
+.badge-high {
+
+background:rgba(255,107,107,0.15);
+color:#ff6b6b;
+
+}
+
+/* ---------------- LOADER ---------------- */
+
+.cm-spinner {
+
+width:36px;
+height:36px;
+
+border:3px solid var(--border);
+border-top-color:var(--accent);
+
+border-radius:50%;
+
+animation:spin .8s linear infinite;
+
+margin:40px auto;
+
+}
+
+@keyframes spin {
+to { transform:rotate(360deg); }
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media (max-width:768px) {
+
+.sidebar {
+width:60px;
+}
+
+.main-content {
+
+margin-left:60px;
+width:calc(100% - 60px);
+padding:20px;
+
+}
+
+.nav-label {
+display:none;
+}
+
 }

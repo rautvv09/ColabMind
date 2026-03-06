@@ -1,69 +1,120 @@
-.create-collab-container {
-
-  display: flex;
-  justify-content: center;
-  padding-top: 40px;
-
-}
-
-.create-collab-card {
-
-  max-width: 520px;
-  width: 100%;
-
-}
-
-.collab-form {
-
+.collab-container {
+  padding: 40px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.collab-field {
+.page-title {
+  color: white;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
 
+/* HEADER */
+.collab-header {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-
+  justify-content: space-between;
+  padding: 10px 20px;
+  color: #8a94a7;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.collab-field label {
-
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-family: 'Syne',sans-serif;
-
+/* All direct children spans in header/row get 20% width for alignment */
+.collab-header span,
+.collab-row > span,
+.collab-row .actions {
+  width: 20%;
 }
 
-.create-btn {
-
-  margin-top: 10px;
-  width: 100%;
-
+/* ROW */
+.collab-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  border-radius: 12px;
+  padding: 16px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: 0.2s ease;
+  color: #e2e8f0;
 }
 
-.collab-alert {
-
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  text-align: center;
-  font-size: 0.85rem;
-
+.collab-row:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
 }
 
-.collab-alert.success {
+/* STATUS COLUMN & BADGE FIX */
+.status-column {
+  display: flex;
+  align-items: center; /* Vertical centering */
+  justify-content: flex-start; /* Aligns badge to the left of its 20% column */
+}
 
-  background: rgba(0,212,170,0.15);
+.status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;    /* This is the key fix */
+  display: inline-block; /* Ensures padding and width apply correctly */
+  text-transform: capitalize;
+}
+
+.status.pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+}
+
+.status.active {
+  background: rgba(0, 212, 170, 0.15);
   color: #00d4aa;
-
 }
 
-.collab-alert.error {
+.status.completed {
+  background: rgba(108, 99, 255, 0.15);
+  color: #a8a3ff;
+}
 
-  background: rgba(255,107,107,0.15);
+/* ACTIONS */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* BUTTONS */
+.btn-update, .btn-delete {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: 0.3s;
+  flex: 1; /* Makes buttons equal width within the actions div */
+  text-align: center;
+}
+
+.btn-update {
+  border: 1px solid #6c63ff;
+  color: #6c63ff;
+}
+
+.btn-update:hover {
+  background: #6c63ff;
+  color: white;
+}
+
+.btn-delete {
+  border: 1px solid #ff6b6b;
   color: #ff6b6b;
+}
 
+.btn-delete:hover {
+  background: #ff6b6b;
+  color: white;
 }

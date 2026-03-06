@@ -9,35 +9,45 @@ const BASE_URL =
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
-  },
+    "Content-Type": "application/json"
+  }
 });
 
 /* ======================================================
-   Global Response / Error Handler
+   Attach JWT Token Automatically
 ====================================================== */
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
+api.interceptors.request.use((config) => {
 
-    const message =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.response?.data ||
-      error.message;
+  const token = sessionStorage.getItem("token");
 
-    console.error("API ERROR:", message);
-
-    return Promise.reject(error);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+
+  return config;
+
+});
+
+/* ======================================================
+   Brand Authentication APIs
+====================================================== */
+
+export const loginBrand = (data) =>
+  api.post("/api/brand/login", data);
+
+export const registerBrand = (data) =>
+  api.post("/api/brand/register", data);
+
 
 /* ======================================================
    Creator APIs
 ====================================================== */
+
+export const getAllCreators = () =>
+  api.get("/api/creator/all");
 
 export const getCreatorByUsername = (username) =>
   api.get(`/api/creator/username/${username}`);
@@ -50,12 +60,6 @@ export const getCreatorAnalytics = (id) =>
 
 export const getCreatorScore = (id) =>
   api.get(`/api/creator/score/${id}`);
-
-export const getAllCreators = () =>
-  api.get("/api/creator/all");
-
-export const registerCreator = (data) =>
-  api.post("/api/creator/register", data);
 
 
 /* ======================================================
@@ -76,11 +80,9 @@ export const getDealsSummary = (creatorId) =>
    AI / ML APIs
 ====================================================== */
 
-/* Price Prediction (uses username) */
 export const predictPrice = (data) =>
   api.post("/api/ai/price/predict", data);
 
-/* Brand Risk Prediction (uses username) */
 export const predictRisk = (data) =>
   api.post("/api/ai/risk/predict", data);
 
@@ -89,22 +91,20 @@ export const predictRisk = (data) =>
    Collaboration APIs
 ====================================================== */
 
-export const getCollaborations = (creatorId, status = null) =>
-  api.get(`/api/collaboration/list/${creatorId}`, {
-    params: status ? { status } : {},
-  });
-
-export const getCollaborationById = (collabId) =>
-  api.get(`/api/collaboration/${collabId}`);
-
 export const createCollaboration = (data) =>
   api.post("/api/collaboration/create", data);
 
-export const updateCollaboration = (collabId, data) =>
-  api.put(`/api/collaboration/update/${collabId}`, data);
+export const getCollaborations = () =>
+  api.get("/api/collaboration/list");
 
-export const deleteCollaboration = (collabId) =>
-  api.delete(`/api/collaboration/${collabId}`);
+export const getCollaborationById = (id) =>
+  api.get(`/api/collaboration/${id}`);
+
+export const updateCollaboration = (id, data) =>
+  api.put(`/api/collaboration/update/${id}`, data);
+
+export const deleteCollaboration = (id) =>
+  api.delete(`/api/collaboration/${id}`);
 
 
 /* ======================================================

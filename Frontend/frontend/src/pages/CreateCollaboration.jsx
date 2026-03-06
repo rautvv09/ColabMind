@@ -3,282 +3,222 @@ import { useNavigate } from "react-router-dom";
 import { getAllCreators, createCollaboration } from "../services/api";
 import "./CreateCollaboration.css";
 
-export default function CreateCollaboration() {
+export default function CreateCollaboration(){
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
-  const [creators, setCreators] = useState([]);
+const [creators,setCreators] = useState([]);
 
-  const [form, setForm] = useState({
-    creator_id: "",
-    campaign_name: "",
-    agreed_price: "",
-    deadline: "",
-    status: "pending"
-  });
+const [form,setForm] = useState({
+creator_id:"",
+campaign_name:"",
+agreed_price:"",
+deadline:"",
+status:"pending"
+});
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [type, setType] = useState("");
+useEffect(()=>{
+loadCreators();
+},[]);
 
-  /* -----------------------------
-     Load creators
-  ----------------------------- */
 
-  useEffect(() => {
-    loadCreators();
-  }, []);
+const loadCreators = async()=>{
 
-  const loadCreators = async () => {
+try{
 
-    try {
+const res = await getAllCreators();
+setCreators(res?.data?.data || []);
 
-      const res = await getAllCreators();
+}catch(err){
+console.error("Creator fetch failed",err);
+}
 
-      if (res.data && res.data.data) {
-        setCreators(res.data.data);
-      } else {
-        setCreators([]);
-      }
+};
 
-    } catch (err) {
 
-      console.error("Failed loading creators:", err);
+const handleChange = (e)=>{
 
-    }
+const {name,value} = e.target;
 
-  };
+setForm({
+...form,
+[name]:value
+});
 
-  /* -----------------------------
-     Handle form change
-  ----------------------------- */
+};
 
-  const handleChange = (e) => {
 
-    const { name, value } = e.target;
+const handleSubmit = async(e)=>{
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: name === "agreed_price" ? Number(value) : value
-    }));
+e.preventDefault();
 
-  };
+try{
 
-  /* -----------------------------
-     Submit collaboration
-  ----------------------------- */
+const payload = {
 
-  const handleSubmit = async (e) => {
+creator_id:form.creator_id,
+deal_type:"reel",
+agreed_price:Number(form.agreed_price),
+currency:"INR",
+deadline:form.deadline,
+status:form.status,
+notes:form.campaign_name,
+deliverables:["1 reel","1 story"]
 
-    e.preventDefault();
+};
 
-    try {
+await createCollaboration(payload);
 
-      setLoading(true);
-      setMessage("");
+alert("Collaboration created successfully");
 
-      if (!form.creator_id) {
-        setType("error");
-        setMessage("Please select a creator.");
-        return;
-      }
+navigate("/collaborations");
 
-      const payload = {
+}catch(err){
 
-        creator_id: form.creator_id,
+console.error(err);
+alert("Failed to create collaboration");
 
-        deal_type: "sponsored_post",
+}
 
-        agreed_price: Number(form.agreed_price),
+};
 
-        currency: "INR",
 
-        deadline: form.deadline,
+return(
 
-        status: form.status || "pending",
+<div className="create-collab-container">
 
-        notes: form.campaign_name,
+<div className="create-collab-card">
 
-        deliverables: [
-          "1 Instagram Post",
-          "1 Instagram Story"
-        ]
+<h1 className="page-title">
+Create Collaboration
+</h1>
 
-      };
 
-      console.log("Submitting payload:", payload);
+<form className="collab-form" onSubmit={handleSubmit}>
 
-      await createCollaboration(payload);
 
-      setType("success");
-      setMessage("Collaboration created successfully!");
+{/* CREATOR */}
 
-      setTimeout(() => {
-        navigate(`/collaborations/${form.creator_id}`);
-      }, 1200);
+<div className="collab-field">
 
-    } catch (err) {
+<label>Select Creator</label>
 
-      console.error("Create collaboration error:", err.response?.data || err);
+<select
+className="cm-input"
+name="creator_id"
+value={form.creator_id}
+onChange={handleChange}
+required
+>
 
-      setType("error");
-      setMessage(
-        err.response?.data?.message ||
-        "Failed to create collaboration."
-      );
+<option value="">
+Choose creator
+</option>
 
-    } finally {
+{creators.map((creator)=>(
+<option
+key={creator.creator_id}
+value={creator.creator_id}
+>
+{creator.username}
+</option>
+))}
 
-      setLoading(false);
+</select>
 
-    }
+</div>
 
-  };
 
-  return (
+{/* GRID */}
 
-    <div className="create-collab-container">
+<div className="form-grid">
 
-      <div className="cm-card create-collab-card">
+<div className="collab-field">
 
-        <h1 className="page-title">Create Collaboration</h1>
+<label>Campaign Name</label>
 
-        <p className="page-subtitle">
-          Start a creator partnership deal
-        </p>
+<input
+className="cm-input"
+type="text"
+name="campaign_name"
+placeholder="Fitness Promotion"
+value={form.campaign_name}
+onChange={handleChange}
+required
+/>
 
-        {message && (
-          <div className={`collab-alert ${type}`}>
-            {message}
-          </div>
-        )}
+</div>
 
-        <form onSubmit={handleSubmit} className="collab-form">
 
-          {/* Creator */}
+<div className="collab-field">
 
-          <div className="collab-field">
+<label>Agreed Price</label>
 
-            <label>Creator</label>
+<input
+className="cm-input"
+type="number"
+name="agreed_price"
+placeholder="₹ Price"
+value={form.agreed_price}
+onChange={handleChange}
+required
+/>
 
-            <select
-              name="creator_id"
-              value={form.creator_id}
-              onChange={handleChange}
-              className="cm-input"
-              required
-            >
+</div>
 
-              <option value="">Select Creator</option>
 
-              {creators.map((creator, index) => (
+<div className="collab-field">
 
-                <option
-                  key={creator.creator_id || index}
-                  value={creator.creator_id}
-                >
-                  {creator.username}
-                </option>
+<label>Deadline</label>
 
-              ))}
+<input
+className="cm-input"
+type="date"
+name="deadline"
+value={form.deadline}
+onChange={handleChange}
+required
+/>
 
-            </select>
+</div>
 
-          </div>
 
-          {/* Campaign */}
+<div className="collab-field">
 
-          <div className="collab-field">
+<label>Status</label>
 
-            <label>Campaign Name</label>
+<select
+className="cm-input"
+name="status"
+value={form.status}
+onChange={handleChange}
+>
 
-            <input
-              type="text"
-              name="campaign_name"
-              value={form.campaign_name}
-              onChange={handleChange}
-              placeholder="Example: Fitness Promotion"
-              className="cm-input"
-              required
-            />
+<option value="pending">Pending</option>
+<option value="active">Active</option>
+<option value="completed">Completed</option>
 
-          </div>
+</select>
 
-          {/* Price */}
+</div>
 
-          <div className="collab-field">
+</div>
 
-            <label>Agreed Price (₹)</label>
 
-            <input
-              type="number"
-              name="agreed_price"
-              value={form.agreed_price}
-              onChange={handleChange}
-              className="cm-input"
-              required
-            />
+<button
+className="create-btn"
+type="submit"
+>
+Create Collaboration
+</button>
 
-          </div>
 
-          {/* Deadline */}
+</form>
 
-          <div className="collab-field">
+</div>
 
-            <label>Deadline</label>
+</div>
 
-            <input
-              type="date"
-              name="deadline"
-              value={form.deadline}
-              onChange={handleChange}
-              className="cm-input"
-              required
-            />
-
-          </div>
-
-          {/* Status */}
-
-          <div className="collab-field">
-
-            <label>Status</label>
-
-            <select
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              className="cm-input"
-            >
-
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-
-            </select>
-
-          </div>
-
-          {/* Submit */}
-
-          <button
-            type="submit"
-            className="btn-cm create-btn"
-            disabled={loading}
-          >
-
-            {loading
-              ? "Creating Collaboration..."
-              : "Create Collaboration"}
-
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-
-  );
+);
 
 }

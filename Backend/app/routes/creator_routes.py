@@ -1,9 +1,11 @@
+import os
+
 from flask import Blueprint, request
 from bson import ObjectId
 
 from app.config import Config
 from app.models.creator import CreatorModel
-from app.utils.db import get_collection
+from app.utils.db import get_collection, get_db
 from app.utils.helpers import serialize_doc, success_response, error_response
 from app.utils.validators import is_valid_object_id, validate_required_fields
 
@@ -81,6 +83,79 @@ def get_creator_by_username(username):
         return error_response("Creator not found in database.", 404)
 
     return success_response(serialize_doc(doc))
+
+
+# ─────────────────────────────────────────────
+# GET /api/creator/lookup/<username>
+#
+# Smart lookup — checks DB first (same query as
+# pricing_services so the same profiles collection
+# is used throughout). If not found, auto-scrapes
+# via SearchAPI, stores to DB, then re-fetches.
+#
+# Response always includes `scraped_fresh` bool so
+# the frontend can show the right loading banner.
+# ─────────────────────────────────────────────
+@creator_bp.route("/lookup/<username>", methods=["GET"])
+def lookup_creator(username):
+
+    username = username.strip().lower()
+    col      = get_collection(COL)
+
+    # ── 1. Check DB ──────────────────────────────────────────
+    doc = col.find_one({
+        "$or": [
+            {"username":         username},
+            {"profile.username": username},
+        ]
+    })
+
+    if doc:
+        return success_response({**serialize_doc(doc), "scraped_fresh": False})
+
+    # ── 2. Not in DB — attempt auto-scrape ───────────────────
+    api_key = os.getenv("SEARCHAPI_KEY", "")
+
+    if not api_key:
+        return error_response(
+            f"@{username} is not in the database and SEARCHAPI_KEY is not "
+            "configured — cannot auto-scrape.",
+            404,
+        )
+
+    try:
+        from app.services.scraper_service import scrape_and_store
+        result = scrape_and_store(username, api_key, get_db())
+    except Exception as e:
+        return error_response(f"Scraping failed: {str(e)}", 502)
+
+    if result["status"] == "not_found":
+        return error_response(
+            f"Instagram profile '@{username}' does not exist or is private.", 404
+        )
+
+    if result["status"] == "error":
+        return error_response(
+            f"Scraping error for '@{username}': {result.get('message', '')}", 502
+        )
+
+    # ── 3. Re-fetch the freshly stored document from DB ──────
+    doc = col.find_one({
+        "$or": [
+            {"username":         username},
+            {"profile.username": username},
+        ]
+    })
+
+    if not doc:
+        return error_response(
+            "Profile scraped but could not be retrieved from DB.", 500
+        )
+
+    return success_response(
+        {**serialize_doc(doc), "scraped_fresh": True},
+        f"Scraped and stored @{username} successfully.",
+    )
 
 
 # ─────────────────────────────────────────────
@@ -229,4 +304,3 @@ def list_creators():
         })
 
     return success_response(creators)
-   

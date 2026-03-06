@@ -9,6 +9,10 @@ class Config:
     SECRET_KEY     = os.getenv("SECRET_KEY", "dev-secret-key")
     FLASK_DEBUG    = os.getenv("FLASK_DEBUG", "True") == "True"
     PORT           = int(os.getenv("PORT", 5000))
+
+    # SearchAPI key — required for auto-scraping new Instagram profiles
+    SEARCHAPI_KEY  = os.getenv("SEARCHAPI_KEY", "")
+
     INSTAGRAM_ACCESS_TOKEN = os.getenv("INSTAGRAM_ACCESS_TOKEN", "")
 
     # MongoDB collection names

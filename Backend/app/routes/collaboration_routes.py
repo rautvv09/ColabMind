@@ -1,6 +1,5 @@
 from flask import Blueprint, request
 from bson import ObjectId
-from datetime import datetime
 
 from app.config import Config
 from app.models.collaboration import CollaborationModel
@@ -50,7 +49,6 @@ def create_collaboration():
     if not creator:
         return error_response("Creator not found.", 404)
 
-    # IMPORTANT PART
     data["creator_id"] = creator_id
     data["brand_id"] = str(brand_id)
 
@@ -66,6 +64,7 @@ def create_collaboration():
     )
 
     return success_response(doc, "Collaboration created.", 201)
+
 
 # LIST COLLABORATIONS
 @collaboration_bp.route("/list", methods=["GET"])
@@ -119,7 +118,7 @@ def get_collaboration(collab_id):
     return success_response(serialize_doc(doc))
 
 
-# UPDATE COLLABORATION
+# UPDATE COLLABORATION (Deal Type + Price Only)
 @collaboration_bp.route("/update/<collab_id>", methods=["PUT"])
 def update_collaboration(collab_id):
 
@@ -142,42 +141,25 @@ def update_collaboration(collab_id):
     if not doc:
         return error_response("Collaboration not found.", 404)
 
-    # UPDATE STATUS
-    if "status" in data:
-        try:
-            col.update_one(
-                {"_id": ObjectId(collab_id)},
-                CollaborationModel.update_status(data["status"])
-            )
-        except ValueError as e:
-            return error_response(str(e))
+    update_fields = {}
 
-    # RECORD PAYMENT
-    if data.get("payment_status") == "paid":
+    # UPDATE DEAL TYPE
+    if "deal_type" in data:
+        update_fields["deal_type"] = data["deal_type"]
 
-        received_on = data.get("payment_received_on", now_iso())
+    # UPDATE PRICE
+    if "agreed_price" in data:
+        update_fields["agreed_price"] = data["agreed_price"]
 
-        delay_days = 0
-        deadline = doc.get("deadline")
+    if not update_fields:
+        return error_response("No fields to update.")
 
-        if deadline:
-            try:
+    update_fields["updated_at"] = now_iso()
 
-                delay_days = max(
-                    0,
-                    (
-                        datetime.fromisoformat(received_on)
-                        - datetime.fromisoformat(deadline)
-                    ).days
-                )
-
-            except:
-                delay_days = 0
-
-        col.update_one(
-            {"_id": ObjectId(collab_id)},
-            CollaborationModel.record_payment(received_on, delay_days)
-        )
+    col.update_one(
+        {"_id": ObjectId(collab_id)},
+        {"$set": update_fields}
+    )
 
     updated = col.find_one({
         "_id": ObjectId(collab_id)

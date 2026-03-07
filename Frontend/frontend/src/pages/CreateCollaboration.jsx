@@ -13,8 +13,7 @@ const [form,setForm] = useState({
 creator_id:"",
 campaign_name:"",
 agreed_price:"",
-deadline:"",
-status:"pending"
+deadline:""
 });
 
 useEffect(()=>{
@@ -61,7 +60,7 @@ deal_type:"reel",
 agreed_price:Number(form.agreed_price),
 currency:"INR",
 deadline:form.deadline,
-status:form.status,
+status:"pending",   // permanently pending
 notes:form.campaign_name,
 deliverables:["1 reel","1 story"]
 
@@ -179,26 +178,6 @@ value={form.deadline}
 onChange={handleChange}
 required
 />
-
-</div>
-
-
-<div className="collab-field">
-
-<label>Status</label>
-
-<select
-className="cm-input"
-name="status"
-value={form.status}
-onChange={handleChange}
->
-
-<option value="pending">Pending</option>
-<option value="active">Active</option>
-<option value="completed">Completed</option>
-
-</select>
 
 </div>
 

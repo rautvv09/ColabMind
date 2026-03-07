@@ -56,7 +56,7 @@ export default function Dashboard() {
   return (
     <div>
       <h1 className="page-title">Dashboard</h1>
-      <p className="page-subtitle">Overview of all creators in your database</p>
+      <p className="page-subtitle"></p>
 
       {/* ------------------------------
           STATS CARDS

@@ -7,6 +7,8 @@ class Config:
     FLASK_DEBUG = os.getenv("FLASK_DEBUG", False)
     PORT = int(os.getenv("PORT", 5000))
 
+    SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key")
+
     # Mongo collections
     COLLECTION_CREATORS = "profiles"
     COLLECTION_COLLABORATIONS = "collaborations"

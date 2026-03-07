@@ -69,7 +69,7 @@ export default function Navbar() {
           fontFamily: "'Syne',sans-serif"
         }}
       >
-        Creator<span className="gradient-text">AI</span>
+        Collab<span className="gradient-text">Mind</span>
       </div>
 
       {/* Brand name */}

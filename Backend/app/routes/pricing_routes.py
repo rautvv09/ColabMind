@@ -1,10 +1,15 @@
 """
 app/routes/pricing_routes.py
 =============================
+Blueprint: /api/ai/price
+
+Endpoints
+---------
+GET  /api/ai/price/health
 POST /api/ai/price/predict   { "username": "<handle>" }
 
 Response includes `scraped_fresh` so the frontend can show the right
-loading message ("Scraping new profile…" vs "Predicting…").
+loading message ("Scraping new profile…" vs "Running models…").
 """
 
 from flask import Blueprint, request, jsonify
@@ -28,13 +33,12 @@ def health():
 # Success 200:
 # {
 #   "success": true,
-#   "scraped_fresh": false,        ← true if the profile was just scraped
+#   "scraped_fresh": false,
 #   "data": {
 #       "username": "...",
 #       "predicted_price": 12500,
 #       "price_band": "₹10,625 - ₹14,375",
 #       "creator_score": 72.4,
-#       "scraped_fresh": false,
 #       "features_used": { ... }
 #   }
 # }
@@ -57,12 +61,11 @@ def predict():
 
         return jsonify({
             "success":       True,
-            "scraped_fresh": result.get("scraped_fresh", False),
+            "scraped_fresh": result.pop("scraped_fresh", False),
             "data":          result,
         }), 200
 
     except ValueError as e:
-        # Covers: not found, private profile, scraping failed, no API key
         return jsonify({"success": False, "message": str(e)}), 404
 
     except Exception as e:

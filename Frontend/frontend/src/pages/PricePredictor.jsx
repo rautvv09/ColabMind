@@ -119,7 +119,7 @@ function UsernameTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username.trim()) { setError("Please enter a username"); return; }
+    if (!username.trim()) return;
 
     setLoading(true);
     setLoadingStage("predicting");
@@ -129,7 +129,6 @@ function UsernameTab() {
     try {
       const data = await predictAll(username.trim().toLowerCase());
 
-      // predictAll returns scraped_fresh if backend auto-scraped
       if (data.scraped_fresh) setLoadingStage("scraping");
 
       setResult(data);
@@ -318,7 +317,8 @@ function ManualTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); setError(""); setResult(null);
+    setLoading(true);
+    setError("");
 
     const payload = Object.fromEntries(
       Object.entries(form).map(([k, v]) => [k, parseFloat(v) || 0])
@@ -408,11 +408,10 @@ function ManualTab() {
                 P(High Risk): {((result.risk_score ?? 0) * 100).toFixed(1)}%
               </div>
             </div>
-            {result.probabilities
-              ? Object.entries(result.probabilities).map(([k, v]) => (
-                  <ProbBar key={k} label={k} pct={Math.round(v * 100)} />
-                ))
-              : null
+            {result.probabilities &&
+              Object.entries(result.probabilities).map(([k, v]) => (
+                <ProbBar key={k} label={k} pct={Math.round(v * 100)} />
+              ))
             }
           </div>
         </div>

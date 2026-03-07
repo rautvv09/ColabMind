@@ -65,9 +65,9 @@ export const getCreatorByUsername = (username) =>
 export const lookupCreator = (username) =>
   api.get(`/api/creator/lookup/${username}`);
 
-export const getCreatorProfile  = (id) => api.get(`/api/creator/profile/${id}`);
+export const getCreatorProfile   = (id) => api.get(`/api/creator/profile/${id}`);
 export const getCreatorAnalytics = (id) => api.get(`/api/creator/analytics/${id}`);
-export const getCreatorScore    = (id) => api.get(`/api/creator/score/${id}`);
+export const getCreatorScore     = (id) => api.get(`/api/creator/score/${id}`);
 
 export const registerCreator = (data) =>
   api.post("/api/creator/register", data);
@@ -87,7 +87,7 @@ export const getDealsSummary = (id) => api.get(`/api/analytics/deals/summary/${i
    POST /api/ai/price/predict  { username }
 ====================================================== */
 
-// Accepts plain string username — wraps it in { username } for the backend
+// Accepts plain string username — wraps in { username } for the backend
 export const predictPrice = (username) =>
   api.post("/api/ai/price/predict", { username });
 

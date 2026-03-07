@@ -1,0 +1,306 @@
+/* ─── GOOGLE FONTS ─── */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap');
+
+/* ─── RESET ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #060d0b;
+  font-family: 'Barlow', system-ui, sans-serif;
+  color: white;
+}
+
+/* ══════════════════════════════════════════
+   PAGE — true full viewport, no overflow
+══════════════════════════════════════════ */
+.auth-page {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* ══════════════════════════════════════════
+   LEFT HERO — fills its column completely
+══════════════════════════════════════════ */
+.auth-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 64px 64px 64px;
+
+  /* Teal glow from top, fading to dark — matches screenshot */
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -5%, #0e5c42 0%, #082b1e 35%, #060d0b 65%),
+    #060d0b;
+}
+
+/* Grid overlay lines */
+.auth-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 100px 100px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LOGO — top row ── */
+.auth-logo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f0faf6;
+  letter-spacing: -0.01em;
+}
+
+.auth-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #00c896 0%, #00b8d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── HERO BODY — middle ── */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+/* ── HEADLINE ── */
+.auth-hero h1 {
+  font-size: clamp(2.6rem, 5vw, 5rem);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.auth-hero h1 span {
+  background: linear-gradient(90deg, #00d4aa 0%, #00b8d9 50%, #6c63ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── DESCRIPTION ── */
+.auth-hero p {
+  color: #6b8a7a;
+  max-width: 460px;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+/* ── STATS — bottom row ── */
+.auth-stats {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 52px;
+}
+
+.auth-stats h3 {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.auth-stats span {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3d5a4e;
+}
+
+/* ══════════════════════════════════════════
+   RIGHT — dark panel, form fully visible
+══════════════════════════════════════════ */
+.auth-form-area {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #080e0c 0%, #0b1410 100%);
+  border-left: 1px solid rgba(255,255,255,0.05);
+  padding: 32px 36px;
+  overflow-y: auto;
+}
+
+/* ── CARD ── */
+.auth-card {
+  width: 100%;
+  max-width: 340px;
+  padding: 40px 36px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+}
+
+/* "BRAND PORTAL" */
+.portal {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #00d4aa;
+  margin-bottom: 12px;
+}
+
+/* "Welcome back" */
+.auth-card h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #f0faf6;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+/* Switch line */
+.switch {
+  font-size: 0.85rem;
+  color: #5a6e60;
+  margin-bottom: 30px;
+}
+
+.switch span {
+  color: #00d4aa;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.switch span:hover {
+  text-decoration: underline;
+}
+
+/* ── FORM ── */
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-card label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3a5046;
+  margin-bottom: 8px;
+  margin-top: 18px;
+}
+
+.auth-card form label:first-of-type {
+  margin-top: 0;
+}
+
+/* ── INPUTS ── */
+.auth-card input {
+  width: 100%;
+  padding: 13px 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #0d1a16;
+  color: #f0faf6;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card input::placeholder {
+  color: #2a3f35;
+}
+
+.auth-card input:focus {
+  border-color: rgba(0, 212, 170, 0.5);
+  box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.08);
+}
+
+/* ── BUTTON ── */
+.auth-btn {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  background: linear-gradient(90deg, #00d4aa 0%, #6c63ff 100%);
+  color: white;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.auth-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 212, 170, 0.25);
+}
+
+.auth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 900px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+  }
+  .auth-hero { display: none; }
+  .auth-form-area {
+    min-height: 100vh;
+    padding: 40px 24px;
+  }
+  .auth-card { max-width: 100%; }
+  html, body, #root { overflow: auto; }
+}

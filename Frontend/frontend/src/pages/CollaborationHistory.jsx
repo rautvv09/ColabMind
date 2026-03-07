@@ -1,183 +1,99 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getCollaborations } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { getCollaborations, deleteCollaboration } from "../services/api";
 import "./CollaborationHistory.css";
-import {
-  RiArrowLeftLine,
-  RiTeamLine,
-  RiMoneyDollarCircleLine
-} from "react-icons/ri";
-
-const STATUS_COLORS = {
-  completed: "badge-low",
-  active: "badge-medium",
-  pending: "badge-medium",
-  cancelled: "badge-high",
-};
 
 export default function CollaborationHistory() {
-
-  const { id } = useParams();
   const navigate = useNavigate();
-
   const [collabs, setCollabs] = useState([]);
-  const [filter, setFilter] = useState("");
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    loadCollaborations();
+  }, []);
 
-    setLoading(true);
+  const loadCollaborations = async () => {
+    try {
+      const res = await getCollaborations();
+      // Adjust res.data.data based on your actual API response structure
+      setCollabs(res.data.data || []);
+    } catch (err) {
+      console.error("Error fetching collaborations:", err);
+    }
+  };
 
-    getCollaborations(id, filter || undefined)
-      .then((r) => setCollabs(r.data.data || []))
-      .catch(() => setCollabs([]))
-      .finally(() => setLoading(false));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this collaboration?")) return;
 
-  }, [id, filter]);
-
-  const totalEarned = collabs
-    .filter((c) => c.payment_status === "paid")
-    .reduce((sum, c) => sum + (c.agreed_price || 0), 0);
+    try {
+      await deleteCollaboration(id);
+      setCollabs((prev) => prev.filter((c) => c._id !== id));
+    } catch (err) {
+      console.error("Error deleting collaboration:", err);
+    }
+  };
 
   return (
-    <div>
+    <div className="collab-container">
+      <h1 className="page-title">Collaboration List</h1>
 
-      {/* Back Button */}
-
-      <button
-        className="btn-outline-cm"
-        style={{ marginBottom: 24 }}
-        onClick={() => navigate(-1)}
-      >
-        <RiArrowLeftLine /> Back
-      </button>
-
-      <h1 className="page-title">Collaboration History</h1>
-      <p className="page-subtitle">Brand deals and partnership records</p>
-
-      {/* Stats */}
-
-      <div className="stats-grid">
-
-        <div className="stat-card">
-          <RiTeamLine size={22} />
-          <div className="stat-value">{collabs.length}</div>
-          <div className="stat-label">Total Deals</div>
-        </div>
-
-        <div className="stat-card">
-          <RiMoneyDollarCircleLine size={22} />
-          <div className="stat-value">
-            ₹{totalEarned.toLocaleString()}
-          </div>
-          <div className="stat-label">Total Earned</div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-value">
-            {collabs.filter((c) => c.status === "completed").length}
-          </div>
-          <div className="stat-label">Completed</div>
-        </div>
-
+      {/* HEADER SECTION */}
+      <div className="collab-header">
+        <span>Deal</span>
+        <span>Price</span>
+        <span>Status</span>
+        <span>Deadline</span>
+        <span className="actions-header">Actions</span>
       </div>
 
-      {/* Filter Buttons */}
+      {/* LIST SECTION */}
+      {collabs.length > 0 ? (
+        collabs.map((c) => (
+          <div key={c._id} className="collab-row">
+            {/* Deal Type */}
+            <span className="deal-name">{c.deal_type}</span>
 
-      <div className="cm-card">
+            {/* Price */}
+            <span className="price-amount">
+              ₹{c.agreed_price ? c.agreed_price.toLocaleString() : "0"}
+            </span>
 
-        <div className="filter-row">
+            {/* Status Column (Fix for the 'pending' length issue) */}
+            <span className="status-column">
+              <span className={`status ${c.status?.toLowerCase()}`}>
+                {c.status}
+              </span>
+            </span>
 
-          {["", "pending", "active", "completed", "cancelled"].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`filter-btn ${filter === status ? "active" : ""}`}
-            >
-              {status || "All"}
-            </button>
-          ))}
+            {/* Deadline */}
+            <span className="deadline-date">
+              {c.deadline 
+                ? new Date(c.deadline).toLocaleDateString() 
+                : "-"
+              }
+            </span>
 
-        </div>
-
-        {/* Loading */}
-
-        {loading ? (
-
-          <div className="cm-spinner" />
-
-        ) : collabs.length === 0 ? (
-
-          <div className="empty-state">
-            <RiTeamLine size={44} />
-            <p>No collaborations found.</p>
+            {/* Action Buttons */}
+            <div className="actions">
+              <button
+                className="btn-update"
+                onClick={() => navigate(`/update-collaboration/${c._id}`)}
+              >
+                Update
+              </button>
+              <button
+                className="btn-delete"
+                onClick={() => handleDelete(c._id)}
+              >
+                Delete
+              </button>
+            </div>
           </div>
-
-        ) : (
-
-          <table className="cm-table">
-
-            <thead>
-              <tr>
-                <th>Brand</th>
-                <th>Deal</th>
-                <th>Price</th>
-                <th>Status</th>
-                <th>Payment</th>
-                <th>Deadline</th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-              {collabs.map((c) => (
-
-                <tr key={c._id}>
-
-                  <td>{c.brand_id || "—"}</td>
-
-                  <td>{c.deal_type || "—"}</td>
-
-                  <td className="price">
-                    ₹{(c.agreed_price || 0).toLocaleString()}
-                  </td>
-
-                  <td>
-                    <span className={`cm-badge ${STATUS_COLORS[c.status]}`}>
-                      {c.status}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span
-                      className={`cm-badge ${
-                        c.payment_status === "paid"
-                          ? "badge-low"
-                          : "badge-medium"
-                      }`}
-                    >
-                      {c.payment_status}
-                    </span>
-                  </td>
-
-                  <td>
-                    {c.deadline
-                      ? new Date(c.deadline).toLocaleDateString()
-                      : "—"}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
-        )}
-
-      </div>
-
+        ))
+      ) : (
+        <p style={{ color: "#8a94a7", textAlign: "center", marginTop: "20px" }}>
+          No collaborations found.
+        </p>
+      )}
     </div>
   );
 }

@@ -68,3 +68,6 @@ Thumbs.db
 coverage/
 *.tmp
 *.temp
+
+
+.ipynb_checkpoints/

@@ -214,7 +214,7 @@ export default function CreatorSearch() {
 
             <button
               className="btn-cm"
-              onClick={() => navigate(`/creator/${result._id}`)}
+              onClick={() => navigate(`/creator/${result.username}`)}
               style={{ display: "flex", alignItems: "center", gap: 6 }}
             >
               View Profile <RiArrowRightLine />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
-  predictAll,
-  predictCreatorScoreFromFeatures,
+  predictAll
+  // predictCreatorScoreFromFeatures,
 } from "../services/api";
 import {
   RiMoneyDollarCircleLine,
@@ -296,129 +296,129 @@ function UsernameTab() {
 }
 
 /* ─── Tab 2 — Manual feature input ──────────────────────── */
-const FIELDS = [
-  { key: "followers",          label: "Followers",            ph: "50000" },
-  { key: "following",          label: "Following",            ph: "400"   },
-  { key: "posts",              label: "Total Posts",          ph: "200"   },
-  { key: "engagement_percent", label: "Engagement % (0-100)", ph: "3.5"   },
-  { key: "avg_likes",          label: "Avg Likes / Post",     ph: "1800"  },
-  { key: "avg_comments",       label: "Avg Comments / Post",  ph: "90"    },
-  { key: "posting_frequency",  label: "Posts / Week",         ph: "4"     },
-  { key: "video_ratio",        label: "Video Ratio (0–1)",    ph: "0.4"   },
-  { key: "image_ratio",        label: "Image Ratio (0–1)",    ph: "0.6"   },
-];
+// const FIELDS = [
+//   { key: "followers",          label: "Followers",            ph: "50000" },
+//   { key: "following",          label: "Following",            ph: "400"   },
+//   { key: "posts",              label: "Total Posts",          ph: "200"   },
+//   { key: "engagement_percent", label: "Engagement % (0-100)", ph: "3.5"   },
+//   { key: "avg_likes",          label: "Avg Likes / Post",     ph: "1800"  },
+//   { key: "avg_comments",       label: "Avg Comments / Post",  ph: "90"    },
+//   { key: "posting_frequency",  label: "Posts / Week",         ph: "4"     },
+//   { key: "video_ratio",        label: "Video Ratio (0–1)",    ph: "0.4"   },
+//   { key: "image_ratio",        label: "Image Ratio (0–1)",    ph: "0.6"   },
+// ];
 
-function ManualTab() {
-  const init = Object.fromEntries(FIELDS.map(f => [f.key, ""]));
-  const [form,    setForm]    = useState(init);
-  const [result,  setResult]  = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState("");
+// function ManualTab() {
+//   const init = Object.fromEntries(FIELDS.map(f => [f.key, ""]));
+//   const [form,    setForm]    = useState(init);
+//   const [result,  setResult]  = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [error,   setError]   = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setError("");
 
-    const payload = Object.fromEntries(
-      Object.entries(form).map(([k, v]) => [k, parseFloat(v) || 0])
-    );
+//     const payload = Object.fromEntries(
+//       Object.entries(form).map(([k, v]) => [k, parseFloat(v) || 0])
+//     );
 
-    try {
-      const res = await predictCreatorScoreFromFeatures(payload);
-      setResult(res.data.data);
-    } catch (err) {
-      setError(err.response?.data?.message || "Prediction failed. Check your inputs.");
-    } finally { setLoading(false); }
-  };
+//     try {
+//       const res = await predictCreatorScoreFromFeatures(payload);
+//       setResult(res.data.data);
+//     } catch (err) {
+//       setError(err.response?.data?.message || "Prediction failed. Check your inputs.");
+//     } finally { setLoading(false); }
+//   };
 
-  return (
-    <>
-      <form onSubmit={handleSubmit} style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: 14,
-      }}>
-        {FIELDS.map(f => (
-          <div key={f.key}>
-            <label style={{ display: "block", fontSize: "0.80rem", color: "var(--text-secondary)", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-              {f.label}
-            </label>
-            <input
-              type="number" step="any" placeholder={f.ph}
-              value={form[f.key]}
-              onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
-              style={{
-                width: "100%", padding: "10px 12px", borderRadius: 8,
-                border: "1px solid var(--border)",
-                background: "var(--bg-surface)", color: "inherit",
-                fontSize: "0.9rem", boxSizing: "border-box", outline: "none",
-              }}
-              onFocus={e => e.target.style.borderColor = "var(--accent)"}
-              onBlur={e  => e.target.style.borderColor = "var(--border)"}
-            />
-          </div>
-        ))}
+//   return (
+//     <>
+//       <form onSubmit={handleSubmit} style={{
+//         display: "grid",
+//         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+//         gap: 14,
+//       }}>
+//         {FIELDS.map(f => (
+//           <div key={f.key}>
+//             <label style={{ display: "block", fontSize: "0.80rem", color: "var(--text-secondary)", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+//               {f.label}
+//             </label>
+//             <input
+//               type="number" step="any" placeholder={f.ph}
+//               value={form[f.key]}
+//               onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+//               style={{
+//                 width: "100%", padding: "10px 12px", borderRadius: 8,
+//                 border: "1px solid var(--border)",
+//                 background: "var(--bg-surface)", color: "inherit",
+//                 fontSize: "0.9rem", boxSizing: "border-box", outline: "none",
+//               }}
+//               onFocus={e => e.target.style.borderColor = "var(--accent)"}
+//               onBlur={e  => e.target.style.borderColor = "var(--border)"}
+//             />
+//           </div>
+//         ))}
 
-        <div style={{ gridColumn: "1/-1", marginTop: 4 }}>
-          <button type="submit" className="btn-cm" disabled={loading}
-            style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 24px", opacity: loading ? 0.6 : 1 }}>
-            {loading ? <RiLoader4Line className="cm-spin" /> : <RiStarLine />}
-            {loading ? "Running models…" : "Run ML Models"}
-          </button>
-        </div>
-      </form>
+//         <div style={{ gridColumn: "1/-1", marginTop: 4 }}>
+//           <button type="submit" className="btn-cm" disabled={loading}
+//             style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 24px", opacity: loading ? 0.6 : 1 }}>
+//             {loading ? <RiLoader4Line className="cm-spin" /> : <RiStarLine />}
+//             {loading ? "Running models…" : "Run ML Models"}
+//           </button>
+//         </div>
+//       </form>
 
-      {error && <ErrorBanner msg={error} />}
+//       {error && <ErrorBanner msg={error} />}
 
-      {result && (
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          gap: 20, marginTop: 24,
-        }}>
-          <div className="cm-card" style={{ textAlign: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 4 }}>
-              <RiStarLine color="#00d4aa" />
-              <h5 style={{ margin: 0 }}>Creator Score</h5>
-            </div>
-            <ScoreRing score={result.creator_score ?? 0} />
-            <div style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>out of 10</div>
-            <div style={{ marginTop: 10 }}>
-              <span style={{
-                padding: "4px 14px", borderRadius: 20, fontSize: "0.82rem", fontWeight: 600,
-                background: `${scoreColour(result.creator_score)}20`,
-                color: scoreColour(result.creator_score),
-              }}>
-                {scoreTier(result.creator_score)}
-              </span>
-            </div>
-          </div>
+//       {result && (
+//         <div style={{
+//           display: "grid",
+//           gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+//           gap: 20, marginTop: 24,
+//         }}>
+//           <div className="cm-card" style={{ textAlign: "center" }}>
+//             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 4 }}>
+//               <RiStarLine color="#00d4aa" />
+//               <h5 style={{ margin: 0 }}>Creator Score</h5>
+//             </div>
+//             <ScoreRing score={result.creator_score ?? 0} />
+//             <div style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>out of 10</div>
+//             <div style={{ marginTop: 10 }}>
+//               <span style={{
+//                 padding: "4px 14px", borderRadius: 20, fontSize: "0.82rem", fontWeight: 600,
+//                 background: `${scoreColour(result.creator_score)}20`,
+//                 color: scoreColour(result.creator_score),
+//               }}>
+//                 {scoreTier(result.creator_score)}
+//               </span>
+//             </div>
+//           </div>
 
-          <div className="cm-card">
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <RiShieldLine color={riskColour(result.risk_label)} />
-              <h5 style={{ margin: 0 }}>Brand Risk</h5>
-            </div>
-            <div style={{ textAlign: "center", marginBottom: 14 }}>
-              <div style={{ fontSize: "1.8rem", fontWeight: 800, color: riskColour(result.risk_label) }}>
-                {result.risk_label}
-              </div>
-              <div style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginTop: 4 }}>
-                P(High Risk): {((result.risk_score ?? 0) * 100).toFixed(1)}%
-              </div>
-            </div>
-            {result.probabilities &&
-              Object.entries(result.probabilities).map(([k, v]) => (
-                <ProbBar key={k} label={k} pct={Math.round(v * 100)} />
-              ))
-            }
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+//           <div className="cm-card">
+//             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+//               <RiShieldLine color={riskColour(result.risk_label)} />
+//               <h5 style={{ margin: 0 }}>Brand Risk</h5>
+//             </div>
+//             <div style={{ textAlign: "center", marginBottom: 14 }}>
+//               <div style={{ fontSize: "1.8rem", fontWeight: 800, color: riskColour(result.risk_label) }}>
+//                 {result.risk_label}
+//               </div>
+//               <div style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginTop: 4 }}>
+//                 P(High Risk): {((result.risk_score ?? 0) * 100).toFixed(1)}%
+//               </div>
+//             </div>
+//             {result.probabilities &&
+//               Object.entries(result.probabilities).map(([k, v]) => (
+//                 <ProbBar key={k} label={k} pct={Math.round(v * 100)} />
+//               ))
+//             }
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// }
 
 /* ─── Page shell ─────────────────────────────────────────── */
 export default function PricePredictor() {
@@ -432,7 +432,7 @@ export default function PricePredictor() {
       </p>
 
       {/* Tab bar */}
-      <div style={{
+      {/* <div style={{
         display: "flex", gap: 4, marginTop: 20, marginBottom: 28,
         background: "var(--bg-surface)", borderRadius: 10, padding: 4,
         width: "fit-content",
@@ -451,7 +451,7 @@ export default function PricePredictor() {
             {t.label}
           </button>
         ))}
-      </div>
+      </div> */}
 
       {tab === "username" ? <UsernameTab /> : <ManualTab />}
 

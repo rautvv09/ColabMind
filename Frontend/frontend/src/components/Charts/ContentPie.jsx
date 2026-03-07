@@ -73,30 +73,36 @@ export default function ContentPie({ videoCount = 0, imageCount = 0, height = 28
     maintainAspectRatio: false,
     cutout: "62%",
     plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          color: "#8892a4",
-          font: { family: "'DM Sans',sans-serif", size: 12 },
-          padding: 20,
-          usePointStyle: true,
-          pointStyleWidth: 10,
-          // Append right-aligned % to each label
-          generateLabels: (chart) => {
-            const ds   = chart.data.datasets[0];
-            const pcts = [videoPct, imagePct];
-            return chart.data.labels.map((lbl, i) => ({
-              text:        `${lbl}   ${pcts[i]}%`,
-              fillStyle:   ds.backgroundColor[i],
-              strokeStyle: ds.borderColor[i],
-              lineWidth:   1,
-              pointStyle:  "circle",
-              hidden:      false,
-              index:       i,
-            }));
-          },
-        },
-      },
+     legend: {
+  position: "bottom",
+  labels: {
+    color: "#d5dbff",   // brighter text for dark UI
+    font: {
+      family: "'DM Sans',sans-serif",
+      size: 13,
+      weight: "500"
+    },
+    padding: 22,
+    usePointStyle: true,
+    pointStyleWidth: 10,
+
+    generateLabels: (chart) => {
+      const ds = chart.data.datasets[0];
+      const pcts = [videoPct, imagePct];
+
+      return chart.data.labels.map((lbl, i) => ({
+        text: `${lbl}   ${pcts[i]}%`,
+        fillStyle: ds.backgroundColor[i],
+        strokeStyle: ds.borderColor[i],
+        lineWidth: 1,
+        pointStyle: "circle",
+        hidden: false,
+        index: i,
+        fontColor: "#d5dbff"
+      }));
+    }
+  }
+},
       tooltip: {
         backgroundColor: "#161d2e",
         titleColor: "#eef0f8",

@@ -66,7 +66,16 @@ def predict():
         }), 200
 
     except ValueError as e:
+        # Profile not found or invalid input
         return jsonify({"success": False, "message": str(e)}), 404
+
+    except RuntimeError as e:
+        # ML pipeline errors (model/scaler mismatch etc.)
+        return jsonify({
+            "success": False,
+            "message": "ML prediction failed",
+            "detail":  str(e),
+        }), 422
 
     except Exception as e:
         return jsonify({

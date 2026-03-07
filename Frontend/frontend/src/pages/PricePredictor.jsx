@@ -8,12 +8,10 @@ import {
   RiSearchLine,
   RiLoader4Line,
   RiErrorWarningLine,
-  RiSparklingLine,
 } from "react-icons/ri";
 import "./PricePredictor.css";
 
-
-/* ───────── Helper functions ───────── */
+/* ───────── Helpers ───────── */
 
 const riskColour = (label = "") => {
   const l = label.toLowerCase();
@@ -29,8 +27,52 @@ const scoreColour = (s = 0) =>
 const scoreTier = (s = 0) =>
   s >= 7 ? "Top Creator" : s >= 4 ? "Growing Creator" : "Emerging Creator";
 
+/* ───────── Probability Bar ───────── */
 
-/* ───────── UI Components ───────── */
+const ProbBar = ({ label, pct }) => {
+  const colour = riskColour(label);
+
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "0.82rem",
+          marginBottom: 3,
+        }}
+      >
+        <span style={{ color: "var(--text-secondary)" }}>
+          {label} Risk
+        </span>
+        <span style={{ color: colour, fontWeight: 600 }}>
+          {pct}%
+        </span>
+      </div>
+
+      <div
+        style={{
+          background: "var(--border)",
+          borderRadius: 6,
+          height: 6,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            width: `${pct}%`,
+            height: "100%",
+            background: colour,
+            borderRadius: 6,
+            transition: "width .6s ease",
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+/* ───────── Error Banner ───────── */
 
 const ErrorBanner = ({ msg }) => (
   <div
@@ -50,14 +92,6 @@ const ErrorBanner = ({ msg }) => (
   </div>
 );
 
-const LoadingBanner = () => (
-  <div className="cm-loading-banner">
-    <RiLoader4Line className="cm-spin" />
-    <span>Running ML models…</span>
-  </div>
-);
-
-
 /* ───────── Main Component ───────── */
 
 export default function PricePredictor() {
@@ -71,8 +105,7 @@ export default function PricePredictor() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-
-  /* Auto run prediction when arriving from creator page */
+  /* Auto prediction */
 
   useEffect(() => {
 
@@ -81,7 +114,6 @@ export default function PricePredictor() {
     runPrediction(initialUsername);
 
   }, [initialUsername]);
-
 
   const runPrediction = async (user) => {
 
@@ -109,14 +141,13 @@ export default function PricePredictor() {
       setLoading(false);
 
     }
-  };
 
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     runPrediction(username);
   };
-
 
   return (
 
@@ -127,7 +158,6 @@ export default function PricePredictor() {
       <p className="page-subtitle">
         ML-powered influencer collaboration pricing
       </p>
-
 
       {/* Search */}
 
@@ -163,12 +193,9 @@ export default function PricePredictor() {
 
       </form>
 
-
-      {loading && <LoadingBanner />}
       {error && <ErrorBanner msg={error} />}
 
-
-      {/* Prediction Result */}
+      {/* Results */}
 
       {result && (
 
@@ -203,7 +230,7 @@ export default function PricePredictor() {
               </div>
 
               <p style={{ color: "var(--text-secondary)" }}>
-                {result.price?.price_band}
+                Range: {result.price?.price_band}
               </p>
 
             </div>
@@ -250,15 +277,22 @@ export default function PricePredictor() {
 
             <div
               style={{
-                fontSize: "1.8rem",
+                fontSize: "1.5rem",
                 fontWeight: 700,
                 textAlign: "center",
-                marginTop: 10,
+                marginBottom: 16,
                 color: riskColour(result.risk?.risk_label),
               }}
             >
               {result.risk?.risk_label}
             </div>
+
+            {/* Restore High / Medium / Low probabilities */}
+
+            {result.risk?.probabilities &&
+              Object.entries(result.risk.probabilities).map(([k, v]) => (
+                <ProbBar key={k} label={k} pct={Math.round(v * 100)} />
+              ))}
 
           </div>
 
@@ -266,12 +300,12 @@ export default function PricePredictor() {
 
       )}
 
-
       <style>{`
         .cm-spin { animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
     </div>
+
   );
 }

@@ -30,6 +30,15 @@ export default function Dashboard() {
     return sum + (c.followers || 0);
   }, 0);
 
+  /* format number to K / M / B */
+  const fmtNum = n => {
+    if (!n) return "—";
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+    if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+    return n.toLocaleString();
+  };
+
   /* ------------------------------
      AVG ENGAGEMENT
   ------------------------------ */
@@ -69,11 +78,7 @@ export default function Dashboard() {
 
         <StatsCard
           label="Total Followers"
-          value={
-            totalFollowers > 0
-              ? `${(totalFollowers / 1e6).toFixed(1)}M`
-              : "—"
-          }
+          value={fmtNum(totalFollowers)}
           icon={<RiVerifiedBadgeLine />}
         />
 
@@ -141,7 +146,7 @@ export default function Dashboard() {
                   </td>
 
                   <td>
-                    {((c.followers || 0) / 1e6).toFixed(1)}M
+                    {fmtNum(c.followers || 0)}
                   </td>
 
                   <td>

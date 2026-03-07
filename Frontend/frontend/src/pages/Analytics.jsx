@@ -17,7 +17,6 @@ import ContentPie      from "../components/Charts/ContentPie";
 import TopicRadar      from "../components/Charts/FollowersChart";   // radar reuse
 import {
   RiArrowLeftLine,
-  RiMoneyDollarCircleLine,
   RiUserLine,
   RiHeartLine,
   RiChat1Line,
@@ -129,16 +128,6 @@ export default function Analytics() {
         </div>
 
       </div>
-
-      {/* ── Row 3: Deal summary stats ─────────────────────────────── */}
-      {dash && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 20 }}>
-          <StatsCard label="Total Deals"    value={dash.total_collaborations ?? 0} />
-          <StatsCard label="Completed"      value={dash.completed_deals      ?? 0} />
-          <StatsCard label="Total Earned"   value={`₹${fmt(dash.total_earned)}`}   icon={<RiMoneyDollarCircleLine />} />
-          <StatsCard label="Avg Deal Value" value={`₹${fmt(dash.avg_deal_value)}`} icon={<RiMoneyDollarCircleLine />} />
-        </div>
-      )}
 
       {/* ── Row 4: Deals by status + Top brands ──────────────────── */}
       {(dealsRows.length > 0 || topBrands.length > 0) && (
